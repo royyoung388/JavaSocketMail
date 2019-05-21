@@ -112,28 +112,36 @@ public class Mail {
         Matcher matcher = pattern.matcher(mail);
         if (matcher.find()) {
             String type = matcher.group(1);
+            String body = null;
+
+            Matcher matcher1 = Pattern.compile("\\n\\n(.|\\n)*").matcher(mail);
+            if (matcher1.find()) {
+                body = matcher1.group(1);
+            }
 
             if (type.contains("boundary")) {
                 String boundary = null;
-                Matcher matcher1 = Pattern.compile("boundary=\"(.)*?\";").matcher(matcher.group(1));
-                boundary = matcher1.group(1);
-                parsePart(boundary);
+                Matcher matcher2 = Pattern.compile("boundary=\"(.)*?\";").matcher(matcher.group(1));
+                boundary = matcher2.group(1);
+                parsePart(body, boundary);
             } else {
-                parsePart(null);
+                content = body;
             }
         }
     }
 
-    private void parsePart(String boundary) {
-        String body = null;
-        Matcher matcher = Pattern.compile("\\n\\n(.|\\n)*").matcher(mail);
-        if (matcher.find()) {
-            body = matcher.group(1);
-        }
-
-        if (boundary == null) {
-            content = body;
-            return;
+    private void parsePart(String part, String boundary) {
+        String re = String.format("(?<=%s)(.|\\n)*?(?=%s)", boundary, boundary);
+        Matcher matcher = Pattern.compile(re).matcher(part);
+        while (matcher.find()) {
+            if (matcher.group(1).contains("boundary")) {
+                String bound = null;
+                Matcher matcher1 = Pattern.compile("boundary=\"(.)*?\";").matcher(matcher.group(1));
+                boundary = matcher1.group(1);
+                parsePart(matcher.group(1), boundary);
+            } else if(!matcher.group(1).contains("name")){
+                content += body;
+            }
         }
     }
 }

@@ -1,9 +1,8 @@
 package smtp;
 
-import sun.misc.BASE64Encoder;
-
 import java.io.*;
 import java.net.Socket;
+import java.util.Base64;
 
 public class MySMTP {
     final static String host = "fishingkingczjhost";
@@ -53,8 +52,8 @@ public class MySMTP {
     private void authorize(String email, String password) throws IOException, SMTPException {
         System.out.println("AUTH");
 
-        String encodeUser = new BASE64Encoder().encode(email.substring(0, email.indexOf("@")).getBytes());
-        String encodePass = new BASE64Encoder().encode(password.getBytes());
+        String encodeUser = Base64.getEncoder().encodeToString(email.substring(0, email.indexOf("@")).getBytes());
+        String encodePass = Base64.getEncoder().encodeToString(password.getBytes());
         // auth login
         writer.println("auth login");
         String resp = reader.readLine();
