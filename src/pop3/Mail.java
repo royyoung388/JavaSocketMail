@@ -133,14 +133,17 @@ public class Mail {
     private void parsePart(String part, String boundary) {
         String re = String.format("(?<=%s)(.|\\n)*?(?=%s)", boundary, boundary);
         Matcher matcher = Pattern.compile(re).matcher(part);
+
         while (matcher.find()) {
+
+            Matcher matcherType = Pattern.compile("Content-Type: (.|\\n)*?\\n(?!\\t)").matcher(matcher.group(1));
+
             if (matcher.group(1).contains("boundary")) {
                 String bound = null;
                 Matcher matcher1 = Pattern.compile("boundary=\"(.)*?\";").matcher(matcher.group(1));
                 boundary = matcher1.group(1);
                 parsePart(matcher.group(1), boundary);
-            } else if(!matcher.group(1).contains("name")){
-                content += body;
+            } else if(matcher.group(1).contains("text")){
             }
         }
     }

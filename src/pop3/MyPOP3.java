@@ -13,27 +13,10 @@ public class MyPOP3 {
     private PrintWriter writer;
     private String server, user, pwd;
 
-    public MyPOP3(String server, String user, String pwd) {
-        this.server = server;
+    public MyPOP3(String user, String pwd) {
+        this.server = user.substring(user.indexOf("@") + 1);;
         this.user = user;
         this.pwd = pwd;
-    }
-
-    public void init(String server) throws IOException, POP3Exception {
-        System.out.println("INIT POP3");
-
-        // socket 建立连接
-        socket = new Socket("pop3." + server, 110);
-        InputStream inputStream = socket.getInputStream();
-        OutputStream outputStream = socket.getOutputStream();
-        reader = new BufferedReader(new InputStreamReader(inputStream));
-        writer = new PrintWriter(outputStream, true);
-
-        String resp = reader.readLine();
-        System.out.println("CONN: " + resp);
-        if (!isOK(resp)) {
-            throw new POP3Exception(getMessage(resp));
-        }
     }
 
     //获取总邮件数
@@ -77,6 +60,23 @@ public class MyPOP3 {
             quit();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void init(String server) throws IOException, POP3Exception {
+        System.out.println("INIT POP3");
+
+        // socket 建立连接
+        socket = new Socket("pop3." + server, 110);
+        InputStream inputStream = socket.getInputStream();
+        OutputStream outputStream = socket.getOutputStream();
+        reader = new BufferedReader(new InputStreamReader(inputStream));
+        writer = new PrintWriter(outputStream, true);
+
+        String resp = reader.readLine();
+        System.out.println("CONN: " + resp);
+        if (!isOK(resp)) {
+            throw new POP3Exception(getMessage(resp));
         }
     }
 
