@@ -95,13 +95,14 @@ public class MyPOP3 {
     //获取指定序号的邮件。序号从1开始编码。越新的邮件序号越大
     private Mail getMail(int index) throws IOException, POP3Exception {
         String resp = shell("retr " + index);
-        int size = Integer.parseInt(getMessage(resp).split(" ")[0]);
+        int size = Integer.parseInt(getMessage(resp).split(" ")[0]) + 1;
 
         char[] chars = new char[size];
         reader.read(chars, 0, size);
+        reader.readLine();
 
         System.out.println(chars);
-        return new Mail(chars.toString());
+        return new Mail(new String(chars));
     }
 
     //删除指定序列的邮件
@@ -138,5 +139,14 @@ public class MyPOP3 {
     private String md5(String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         byte[] secretBytes = MessageDigest.getInstance("md5").digest(pwd.getBytes());
         return new BigInteger(1, secretBytes).toString(16);
+    }
+
+    public static void main(String[] args) {
+        MyPOP3 pop3 = new MyPOP3("13297990330@163.com", "ypc19980501.");
+        try {
+            pop3.getMails(11,11);
+        } catch (POP3Exception e) {
+            e.printStackTrace();
+        }
     }
 }
