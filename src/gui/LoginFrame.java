@@ -22,6 +22,7 @@ public class LoginFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                //lLlL
                 String email = textFieldEmail.getText();
                 String password = new String(passwordFieldPasswd.getPassword());
 
