@@ -15,9 +15,21 @@ public class MyPOP3 {
 
     public MyPOP3(String user, String pwd) {
         this.server = user.substring(user.indexOf("@") + 1);
-        ;
         this.user = user;
         this.pwd = pwd;
+    }
+
+    //测试是否可以登录
+    public boolean login() {
+        try {
+            init(server);
+            login(user, pwd);
+            quit();
+        } catch (IOException | POP3Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     //获取总邮件数
