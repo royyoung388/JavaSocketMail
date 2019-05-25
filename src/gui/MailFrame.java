@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MailFrame extends JFrame{
-    private JFrame frame;
+    private JFrame frame = this;
     private JPanel panelMail;
     private JFrame receiveFrame;
     private Mail mail;

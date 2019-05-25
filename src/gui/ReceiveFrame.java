@@ -49,10 +49,14 @@ public class ReceiveFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if(pageLastMail == mailCount){
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "已经是最后一页啦",
+                            "oops",
+                            JOptionPane.WARNING_MESSAGE
+                    );
                     return;
                 }
-                pageLastMail = pageLastMail- deleteCount;
-                deleteCount =0;
                 pageFirstMail = pageLastMail+1;
                 if(pageLastMail+10>=mailCount){
                     pageLastMail = mailCount;
@@ -68,12 +72,18 @@ public class ReceiveFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(currentPage ==0){
+                if(currentPage == 1){
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "已经是第一页啦",
+                            "oops",
+                            JOptionPane.WARNING_MESSAGE
+                    );
                     return;
                 }
                 if(pageFirstMail<=10){
                     pageFirstMail =1;
-                    pageLastMail = mailCount;
+                    pageLastMail = 10;
                 }else{
                     pageLastMail = pageFirstMail-1;
                     pageFirstMail = pageLastMail-9;
@@ -108,18 +118,17 @@ public class ReceiveFrame {
                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                 if(response==0){
                     try {
-                        int[] newRows  = rows;
+                        int[] newRows  = new int[rows.length];
                         for(int i=0; i< rows.length;i++){
-
-                            newRows[i]+=pageFirstMail;
+                            newRows[i]= rows[i]+pageFirstMail;
                             System.out.println(newRows[i]);
                         }
-                        pop3.deleteMails(rows);
-                        for (int i =0;i<rows.length;i++){
-                            model.removeRow(rows[i]-1);
+                        pop3.deleteMails(newRows);
+                        for (int row : rows) {
+                            model.removeRow(row);
                         }
                         mailCount--;
-                        deleteCount++;
+                        pageLastMail--;
                     } catch (POP3Exception e1) {
                         String m = e1.getMessage();
                         JOptionPane.showMessageDialog(
@@ -158,6 +167,8 @@ public class ReceiveFrame {
                     pageLastMail = 10;
                 }
                 pageFirstMail =1;
+                currentPage = 1;
+                text_page.setText(Integer.toString(currentPage));
             }
         });
     }
@@ -195,7 +206,7 @@ public class ReceiveFrame {
 
     private Object[][] getMailInfo(int start, int end) {
         // TODO : 在此获取所有邮件信息
-        Object[][] result = new Object[end - start+1][4];
+        Object[][] result = new Object[end - start+1][3];
         try {
             currentPageMails = pop3.getMails(start, end);
             for(int i =0; i<= end -start; i++){

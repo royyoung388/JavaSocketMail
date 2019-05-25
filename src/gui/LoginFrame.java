@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginFrame extends JFrame{
-    private JFrame frame;
+    private JFrame frame = this;
     private JPanel panelLogin;
 
     private JPanel bg= new JPanel();
@@ -52,6 +52,7 @@ public class LoginFrame extends JFrame{
                     if(loginReceive(email,password)){
                         HomePage homePage = new HomePage(email, password);
                         homePage.showPage();
+                        frame.dispose();
                     };
             }
         });
@@ -104,11 +105,11 @@ public class LoginFrame extends JFrame{
                     "登陆失败",
                     JOptionPane.WARNING_MESSAGE
             );
-            return true;
+            return false;
         }
     }
 
-    public void showFrame() {
+    void showFrame() {
         this.setLayout(null);
         this.setSize(950, 500);
         this.setLocation(400, 300);

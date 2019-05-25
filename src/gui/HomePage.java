@@ -123,7 +123,7 @@ public class HomePage extends JFrame{
         // 跳转
         SendFrame sendFrame = new SendFrame();
         sendFrame.show(email, password);
-        this.dispose();
+        //this.dispose();
     }
 
     // TODO : POP3登陆
@@ -133,7 +133,7 @@ public class HomePage extends JFrame{
         if(pop3.login()){
             ReceiveFrame receiveFrame = new ReceiveFrame(pop3);
             receiveFrame.show();
-            this.dispose();
+            //this.dispose();
         } else{
             JOptionPane.showMessageDialog(
                     this,
@@ -146,7 +146,7 @@ public class HomePage extends JFrame{
 
     }
 
-    public void showPage() {
+    void showPage() {
         this.setLayout(null);
         this.setSize(1000, 700);
         this.setLocation(400, 300);
