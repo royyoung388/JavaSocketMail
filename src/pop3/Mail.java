@@ -15,7 +15,7 @@ public class Mail {
     private String toEmail;
     private Date date;
     private String subject;
-    private String content;
+    private String content = "";
     private String mail;
 
     public Mail(String mail) {
@@ -122,14 +122,16 @@ public class Mail {
             String type = matcher.group(1);
             String body = null;
 
-            Matcher matcher1 = Pattern.compile("\r\n\r\n((.|\n|\r)*)").matcher(mail);
+            //获取body
+            Matcher matcher1 = Pattern.compile("\r\n\r\n(.*)", Pattern.DOTALL).matcher(mail);
             if (matcher1.find()) {
                 body = matcher1.group(1);
             }
 
+            //寻找最外层的boundary
             if (type.contains("boundary")) {
                 String boundary = null;
-                Matcher matcher2 = Pattern.compile("boundary=\"(.*)?\"").matcher(matcher.group(1));
+                Matcher matcher2 = Pattern.compile("boundary=\"(.*)?\"").matcher(type);
                 if (matcher2.find())
                     boundary = matcher2.group(1);
                 parsePart(body, boundary);
@@ -140,12 +142,12 @@ public class Mail {
     }
 
     private void parsePart(String part, String boundary) {
-        String re = String.format("(?<=--%s)((.|\n|\r)*?)(?=--%s)", boundary, boundary);
-        Matcher matcher = Pattern.compile(re).matcher(part);
+        String re = String.format("(?<=--%s)((.)*?)(?=--%s)", boundary, boundary);
+        Matcher matcher = Pattern.compile(re, Pattern.DOTALL).matcher(part);
 
         while (matcher.find()) {
 
-            Matcher matcherType = Pattern.compile("Content-Type: ((.|\n|\r)*?)\n(?!\t)").matcher(matcher.group(1));
+            Matcher matcherType = Pattern.compile("Content-Type: (.*?)\n(?!\t)", Pattern.DOTALL).matcher(matcher.group(1));
             String type = null;
             if (matcherType.find())
                 type = matcherType.group(1);
@@ -157,14 +159,38 @@ public class Mail {
                     boundary = matcher1.group(1);
                 parsePart(matcher.group(1), boundary);
             } else if (type.contains("text")) {
-                Matcher matcherContent = Pattern.compile("\r\n\r\n((.|\n|\r)*)").matcher(matcher.group(1));
+                Matcher matcherContent = Pattern.compile("\r\n\r\n(.*)", Pattern.DOTALL).matcher(matcher.group(1));
                 if (matcherContent.find())
                     content += matcherContent.group(1);
             }
         }
     }
 
-    public static void main(String[] args) {
+    public String getFrom() {
+        return from;
+    }
 
+    public String getFromEmail() {
+        return fromEmail;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public String getToEmail() {
+        return toEmail;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getContent() {
+        return content;
     }
 }

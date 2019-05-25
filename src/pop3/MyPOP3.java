@@ -14,7 +14,8 @@ public class MyPOP3 {
     private String server, user, pwd;
 
     public MyPOP3(String user, String pwd) {
-        this.server = user.substring(user.indexOf("@") + 1);;
+        this.server = user.substring(user.indexOf("@") + 1);
+        ;
         this.user = user;
         this.pwd = pwd;
     }
@@ -50,7 +51,7 @@ public class MyPOP3 {
     }
 
     //删除邮件
-    public void deleteMails(int[] indexes) throws POP3Exception{
+    public void deleteMails(int[] indexes) throws POP3Exception {
         try {
             init(server);
             login(user, pwd);
@@ -98,10 +99,24 @@ public class MyPOP3 {
         int size = Integer.parseInt(getMessage(resp).split(" ")[0]) + 1;
 
         char[] chars = new char[size];
-        reader.read(chars, 0, size);
-        reader.readLine();
-
+        int readLen = 0;
+        int getLen = 0;
+        while (getLen < size) {
+            readLen = reader.read(chars, getLen, size - getLen);
+            if (readLen == -1) {
+                break;
+            }
+            getLen += readLen;
+        }
         System.out.println(chars);
+
+        //确保最后一个字符是 . 表示结束
+        while (chars[chars.length - 1] != '.') {
+            String a = reader.readLine();
+            System.out.println(a);
+            if (a.equals("."))
+                break;
+        }
         return new Mail(new String(chars));
     }
 
@@ -125,6 +140,11 @@ public class MyPOP3 {
     private String shell(String shell) throws IOException, POP3Exception {
         writer.println(shell);
         String resp = reader.readLine();
+        //如果读出来是空的，则继续读
+        while (resp.isEmpty()) {
+            resp = reader.readLine();
+        }
+
         System.out.println(shell + " : " + resp);
         if (!isOK(resp)) {
             throw new POP3Exception(getMessage(resp));
@@ -144,7 +164,7 @@ public class MyPOP3 {
     public static void main(String[] args) {
         MyPOP3 pop3 = new MyPOP3("13297990330@163.com", "ypc19980501.");
         try {
-            pop3.getMails(11,11);
+            pop3.getMails(1, 10);
         } catch (POP3Exception e) {
             e.printStackTrace();
         }
