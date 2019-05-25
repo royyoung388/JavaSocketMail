@@ -51,6 +51,7 @@ public class LoginFrame extends JFrame{
                 if (checkEnter(email, password))
                     if(loginReceive(email,password)){
                         HomePage homePage = new HomePage(email, password);
+                        homePage.showPage();
                     };
             }
         });

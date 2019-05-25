@@ -1,22 +1,20 @@
 package gui;
 
 import pop3.MyPOP3;
-import pop3.POP3Exception;
 import smtp.MySMTP;
 import smtp.SMTPException;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-public class HomePage {
+public class HomePage extends JFrame{
     private JFrame frame;
     private JTextField text_userEmail;
-    private JButton button_receive;
-    private JButton button_send;
     private JLabel label_user;
     private JTextField text_memo;
     private JPanel mainPanel;
@@ -25,7 +23,43 @@ public class HomePage {
     private String user;
     private String password;
 
+    private JButton button_receive = new JButton();
+    private JButton button_send = new JButton();
+    private JLabel title = new JLabel("hi!");
+    private JPanel bg= new JPanel();
+    private JPanel panel = new JPanel();
+
     HomePage(String user, String password){
+        ImageIcon img = new ImageIcon("resource/homepage.png");
+        JLabel imgLabel = new JLabel(img);
+        this.getLayeredPane().add(panel, new Integer(Integer.MIN_VALUE));
+        imgLabel.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
+
+        bg.setBounds(0, 0, 1000, 700);
+        bg.setBackground(Color.white);
+
+        panel.setBounds(0, 0, 1000, 700);
+        panel.add(imgLabel);
+        panel.setOpaque(false);
+
+        title.setFont(new java.awt.Font("Dialog",   3,   55));
+        title.setForeground(Color.blue);
+        title.setBounds(350, 55, 125, 50);
+
+        button_receive.setBounds(72,300, 123, 50);
+        button_receive.setBorderPainted(false);
+        button_receive.setBackground(Color.white);
+        button_receive.setOpaque(false);
+        //button_receive.setText("收邮件");
+
+
+        button_send.setBounds(72,134, 123, 50);
+        button_send.setBorderPainted(false);
+        button_send.setBackground(Color.white);
+        button_send.setOpaque(false);
+        //button_send.setText("发邮件");
+
+
         this.user =user;
         this.password =password;
         text_userEmail.setText(user);
@@ -63,11 +97,12 @@ public class HomePage {
                 loginReceive(user, password);
             }
         });
-        ImageIcon img = new ImageIcon("resource/write.jpg");
-        label_bg.setIcon(img);
-        label_bg.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
 
-        show();
+        this.add(title);
+        this.add(button_receive);
+        this.add(button_send);
+        this.add(panel);
+        this.add(bg);
     }
 
     // SMTP登陆
@@ -111,14 +146,18 @@ public class HomePage {
 
     }
 
-    void show() {
-        frame = new JFrame("主页");
-        frame.setContentPane(mainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setSize(1005, 730);
-        frame.setLocationRelativeTo(null);
+    public void showPage() {
+        this.setLayout(null);
+        this.setSize(1000, 700);
+        this.setLocation(400, 300);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.setVisible(true);
+    }
+    public static void main(String[] args) {
+        HomePage homePage= new HomePage("","");
+        homePage.showPage();
     }
 }
