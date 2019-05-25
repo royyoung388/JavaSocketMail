@@ -36,7 +36,7 @@ public class Mail {
                 if (matcher.find()) {
                     switch (matcher.group(2)) {
                         case "B":
-                            byte[] source = Base64.getDecoder().decode(matcher.group(3));
+                            byte[] source = Base64.getDecoder().decode(matcher.group(3).replace("\r\n", ""));
                             return new String(source, matcher.group(1));
                         case "Q":
                             return QuotedPrintable.decode(matcher.group(3).getBytes(), matcher.group(1));
@@ -50,7 +50,7 @@ public class Mail {
     }
 
     private void parseFrom() {
-        Pattern pattern = Pattern.compile("From: ((.|\n|\r)*?)\n(?!\t)");
+        Pattern pattern = Pattern.compile("From: ((.|\n|\r)*?)\n(?!\\s)");
         Matcher matcher = pattern.matcher(mail);
         if (matcher.find()) {
             String[] temp = matcher.group(1).split(" ");
@@ -72,7 +72,7 @@ public class Mail {
     }
 
     private void parseTo() {
-        Pattern pattern = Pattern.compile("To: ((.|\n|\r)*?)\n(?!\t)");
+        Pattern pattern = Pattern.compile("To: ((.|\n|\r)*?)\n(?!\\s)");
         Matcher matcher = pattern.matcher(mail);
         if (matcher.find()) {
             String[] temp = matcher.group(1).split(" ");
@@ -94,13 +94,13 @@ public class Mail {
     }
 
     private void parseDate() {
-        Pattern pattern = Pattern.compile("Date: ((.|\n|\r)*?)\n(?!\t)");
+        Pattern pattern = Pattern.compile("Date: ((.|\n|\r)*?)\n(?!\\s)");
         Matcher matcher = pattern.matcher(mail);
         if (matcher.find()) {
             System.out.println(matcher.group(1));
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
-                Date date = sdf.parse(matcher.group(1));
+                date = sdf.parse(matcher.group(1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -108,7 +108,7 @@ public class Mail {
     }
 
     private void parseSubject() {
-        Pattern pattern = Pattern.compile("Subject: ((.|\n|\r)*?)\n(?!\t)");
+        Pattern pattern = Pattern.compile("Subject: (.*?)\n(?!\\s)", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(mail);
         if (matcher.find()) {
             subject = decode(matcher.group(1));
@@ -116,7 +116,7 @@ public class Mail {
     }
 
     private void parseContent() {
-        Pattern pattern = Pattern.compile("Content-Type: ((.|\n|\r)*?)\n(?!\t)");
+        Pattern pattern = Pattern.compile("Content-Type: (.*?)\n(?!\\s)", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(mail);
         if (matcher.find()) {
             String type = matcher.group(1);
@@ -136,18 +136,56 @@ public class Mail {
                     boundary = matcher2.group(1);
                 parsePart(body, boundary);
             } else {
-                content = body;
+                //没有boundary
+
+                //获取字符编码
+                Matcher matcherCharset = Pattern.compile("charset=(.*)?").matcher(type);
+                String charset = "utf-8";
+                if (matcherCharset.find()) {
+                    charset = matcherCharset.group(1);
+                    if (charset.startsWith("\""))
+                        charset = charset.substring(1, charset.length() - 1);
+                }
+                System.out.println("charset = " + charset);
+
+                //获取传输编码
+                Matcher matcherEncoding = Pattern.compile("Content-Transfer-Encoding: (.*?)\r\n(?!\\s)", Pattern.DOTALL)
+                        .matcher(mail);
+                String encoding = "base64";
+                if (matcherEncoding.find()) {
+                    encoding = matcherEncoding.group(1);
+                }
+                System.out.println("encoding = " + encoding);
+
+                switch (encoding) {
+                    case "quoted-printable":
+                        content += QuotedPrintable.decode(body.trim().getBytes(), charset);
+                        break;
+                    case "base64":
+                        try {
+                            byte[] source = Base64.getDecoder().decode(body.trim());
+                            content += new String(source, charset);
+                        } catch (UnsupportedEncodingException e) {
+                            try {
+                                byte[] source = Base64.getDecoder().decode(body.trim().replace("\r\n", ""));
+                                content += new String(source, charset);
+                            } catch (UnsupportedEncodingException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        break;
+                }
             }
         }
     }
 
     private void parsePart(String part, String boundary) {
         String re = String.format("(?<=--%s)((.)*?)(?=--%s)", boundary, boundary);
-        Matcher matcher = Pattern.compile(re, Pattern.DOTALL).matcher(part);
+        Matcher matcherBoundary = Pattern.compile(re, Pattern.DOTALL).matcher(part);
 
-        while (matcher.find()) {
+        while (matcherBoundary.find()) {
 
-            Matcher matcherType = Pattern.compile("Content-Type: (.*?)\n(?!\t)", Pattern.DOTALL).matcher(matcher.group(1));
+            Matcher matcherType = Pattern.compile("Content-Type: (.*?)\n(?!\\s)", Pattern.DOTALL).matcher(matcherBoundary.group(1));
             String type = null;
             if (matcherType.find())
                 type = matcherType.group(1);
@@ -157,11 +195,50 @@ public class Mail {
                 Matcher matcher1 = Pattern.compile("boundary=\"(.*)?\"").matcher(type);
                 if (matcher1.find())
                     boundary = matcher1.group(1);
-                parsePart(matcher.group(1), boundary);
+                parsePart(matcherBoundary.group(1), boundary);
             } else if (type.contains("text")) {
-                Matcher matcherContent = Pattern.compile("\r\n\r\n(.*)", Pattern.DOTALL).matcher(matcher.group(1));
-                if (matcherContent.find())
-                    content += matcherContent.group(1);
+                //获取字符编码
+                Matcher matcherCharset = Pattern.compile("charset=(.*)?").matcher(type);
+                String charset = "utf-8";
+                if (matcherCharset.find()) {
+                    charset = matcherCharset.group(1);
+                    if (charset.startsWith("\""))
+                        charset = charset.substring(1, charset.length() - 1);
+                }
+                System.out.println("charset = " + charset);
+
+                //获取传输编码
+                Matcher matcherEncoding = Pattern.compile("Content-Transfer-Encoding: (.*?)\r\n(?!\\s)", Pattern.DOTALL)
+                        .matcher(matcherBoundary.group(1));
+                String encoding = "base64";
+                if (matcherEncoding.find()) {
+                    encoding = matcherEncoding.group(1);
+                }
+                System.out.println("encoding = " + encoding);
+
+                //获取content
+                Matcher matcherContent = Pattern.compile("\r\n\r\n(.*)", Pattern.DOTALL).matcher(matcherBoundary.group(1));
+                if (matcherContent.find()) {
+                    System.out.println("matcherContent = " + matcherContent.group(1));
+                    switch (encoding) {
+                        case "quoted-printable":
+                            content += QuotedPrintable.decode(matcherContent.group(1).trim().getBytes(), charset);
+                            break;
+                        case "base64":
+                            try {
+                                byte[] source = Base64.getDecoder().decode(matcherContent.group(1).trim());
+                                content += new String(source, charset);
+                            } catch (UnsupportedEncodingException e) {
+                                try {
+                                    byte[] source = Base64.getDecoder().decode(matcherContent.group(1).trim().replace("\r\n", ""));
+                                    content += new String(source, charset);
+                                } catch (UnsupportedEncodingException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            break;
+                    }
+                }
             }
         }
     }
