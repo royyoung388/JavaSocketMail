@@ -43,7 +43,7 @@ public class SendFrame extends JFrame{
 
 
     public SendFrame() {
-        ImageIcon img = new ImageIcon("resource/writemain.png");
+        ImageIcon img = new ImageIcon("resource/writeMail.png");
         JLabel imgLabel = new JLabel(img);
         this.getLayeredPane().add(panel, new Integer(Integer.MIN_VALUE));
         imgLabel.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
