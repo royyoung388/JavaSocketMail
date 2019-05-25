@@ -64,9 +64,7 @@ public class HomePage {
                 loginReceive(user, password);
             }
         });
-
         show();
-
     }
 
     // SMTP登陆
