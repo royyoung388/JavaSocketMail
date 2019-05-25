@@ -67,4 +67,5 @@ public class ReceiveFrame {
         };
         tableMail.setModel(dataModel);
     }
+
 }

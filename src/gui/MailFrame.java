@@ -46,4 +46,9 @@ public class MailFrame {
         subjectLabel.setText(subject);
         textAreaMain.setText(content);
     }
+
+    public static void main(String[] args) {
+        MailFrame mailFrame = new MailFrame();
+        mailFrame.show(null);
+    }
 }
