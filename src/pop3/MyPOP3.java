@@ -3,6 +3,7 @@ package pop3;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -81,6 +82,7 @@ public class MyPOP3 {
 
         // socket 建立连接
         socket = new Socket("pop3." + server, 110);
+        socket.setSoTimeout(2000);
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
         reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -114,7 +116,14 @@ public class MyPOP3 {
         int readLen = 0;
         int getLen = 0;
         while (getLen < size) {
-            readLen = reader.read(chars, getLen, size - getLen);
+            try {
+                readLen = reader.read(chars, getLen, size - getLen);
+            } catch (SocketTimeoutException e) {
+                getLen += readLen;
+                if (getLen == 0)
+                    throw new POP3Exception("Get Mail Timeout");
+                break;
+            }
             if (readLen == -1) {
                 break;
             }
@@ -122,8 +131,9 @@ public class MyPOP3 {
         }
         System.out.println(chars);
 
+        String mail = new String(chars).trim();
         //确保最后一个字符是 . 表示结束
-        while (chars[chars.length - 1] != '.') {
+        while (!mail.endsWith(".")) {
             String a = reader.readLine();
             System.out.println(a);
             if (a.equals("."))

@@ -125,7 +125,10 @@ public class Mail {
             //获取body
             Matcher matcher1 = Pattern.compile("\r\n\r\n(.*)", Pattern.DOTALL).matcher(mail);
             if (matcher1.find()) {
-                body = matcher1.group(1);
+                body = matcher1.group(1).trim();
+                if (body.endsWith(".")) {
+                    body = body.substring(0, body.length() - 1);
+                }
             }
 
             //寻找最外层的boundary
@@ -165,13 +168,15 @@ public class Mail {
                         try {
                             byte[] source = Base64.getDecoder().decode(body.trim());
                             content += new String(source, charset);
-                        } catch (UnsupportedEncodingException e) {
+                        } catch (IllegalArgumentException e) {
                             try {
                                 byte[] source = Base64.getDecoder().decode(body.trim().replace("\r\n", ""));
                                 content += new String(source, charset);
                             } catch (UnsupportedEncodingException ex) {
                                 ex.printStackTrace();
                             }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                         break;
                 }
@@ -228,13 +233,15 @@ public class Mail {
                             try {
                                 byte[] source = Base64.getDecoder().decode(matcherContent.group(1).trim());
                                 content += new String(source, charset);
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (IllegalArgumentException e) {
                                 try {
                                     byte[] source = Base64.getDecoder().decode(matcherContent.group(1).trim().replace("\r\n", ""));
                                     content += new String(source, charset);
                                 } catch (UnsupportedEncodingException ex) {
                                     ex.printStackTrace();
                                 }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
                             }
                             break;
                     }
@@ -269,5 +276,56 @@ public class Mail {
 
     public String getContent() {
         return content;
+    }
+
+    public static void main(String[] args) {
+        String a = "VGhpcyBpcyBhbiBhdXRvbWF0aWNhbGx5IGdlbmVyYXRlZCBlLW1haWwgZnJvbSBOaW50ZW5kby4K\r\n" +
+                "Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KVGhhbmsgeW91IGZvciB5b3VyIGludGVyZXN0IGlu\r\n" +
+                "IHNldHRpbmcgdXAgYSBOaW50ZW5kbyBBY2NvdW50IHRvIHVzZSB3aXRoIHRoZSBOaW50ZW5kbyBT\r\n" +
+                "d2l0Y2ggc3lzdGVtLgoKTGlua2luZyBhIE5pbnRlbmRvIEFjY291bnQgdG8gdGhlIHVzZXIgYWNj\r\n" +
+                "b3VudCBvbiB5b3VyIHN5c3RlbSBwcm92aWRlcyBhY2Nlc3MgdG8gdmFyaW91cyBmZWF0dXJlcyBv\r\n" +
+                "biBOaW50ZW5kbyBTd2l0Y2gsIGluY2x1ZGluZyBhY2Nlc3MgdG8gTmludGVuZG8gZVNob3AuIFlv\r\n" +
+                "dSBjYW4gYWxzbyBlYXJuIHBvaW50cyBmb3IgdGhlIE15IE5pbnRlbmRvIHJld2FyZHMgcHJvZ3Jh\r\n" +
+                "bSBvbiBlbGlnaWJsZSBwdXJjaGFzZXMgbWFkZSBvbiBOaW50ZW5kbyBTd2l0Y2guCgpQbGVhc2Ug\r\n" +
+                "dXNlIHRoZSBVUkwgYmVsb3cgdG8gY3JlYXRlIGEgTmludGVuZG8gQWNjb3VudC4gT25jZSB5b3Ug\r\n" +
+                "aGF2ZSBjcmVhdGVkIHlvdXIgTmludGVuZG8gQWNjb3VudCwgeW91IGNhbiBhbHNvIGNyZWF0ZSBO\r\n" +
+                "aW50ZW5kbyBBY2NvdW50cyBmb3IgY2hpbGRyZW4gKHVuZGVyIDEzIHllYXJzIG9mIGFnZSkgYnkg\r\n" +
+                "c2VsZWN0aW5nICJQYXJlbnRhbCBjb250cm9scyIgaW4geW91ciBOaW50ZW5kbyBBY2NvdW50IHNl\r\n" +
+                "dHRpbmdzIGFuZCB0aGVuICJDcmVhdGUgYW4gYWNjb3VudCBmb3IgYSBjaGlsZC4iCgpUbyBsaW5r\r\n" +
+                "IHlvdXIgTmludGVuZG8gQWNjb3VudCB0byBOaW50ZW5kbyBTd2l0Y2gsIHBsZWFzZSBkbyB0aGUg\r\n" +
+                "Zm9sbG93aW5nOgoKICAxLiBBY2Nlc3MgU3lzdGVtIFNldHRpbmdzIG9uIE5pbnRlbmRvIFN3aXRj\r\n" +
+                "aCwgYW5kIHNlbGVjdCB0aGUgdXNlciBhY2NvdW50IHlvdSB3b3VsZCBsaWtlIHRvIGxpbmsuCgog\r\n" +
+                "IDIuIFNlbGVjdCAiTGluayBOaW50ZW5kbyBBY2NvdW50LiIKCiAgMy4gU2VsZWN0ICJTaWduIElu\r\n" +
+                "IGFuZCBMaW5rLiIKCiAgNC4gRm9sbG93IHRoZSBvbi1zY3JlZW4gaW5zdHJ1Y3Rpb25zIHRvIGxp\r\n" +
+                "bmsgeW91ciBOaW50ZW5kbyBBY2NvdW50IHRvIHlvdXIgdXNlciBhY2NvdW50LgoKSWYgeW91IHdv\r\n" +
+                "dWxkIGxpa2UgdG8gbGluayB5b3VyIE5pbnRlbmRvIEFjY291bnQgdXNpbmcgdGhlIDUtZGlnaXQg\r\n" +
+                "Y29uZmlybWF0aW9uIGNvZGUsIGxvY2F0ZSB0aGUgY29kZSBmb3IgdGhlIGFwcHJvcHJpYXRlIGFj\r\n" +
+                "Y291bnQgYWZ0ZXIgdGhlIE5pbnRlbmRvIEFjY291bnQgaXMgY3JlYXRlZC4KCmh0dHBzOi8vYWNj\r\n" +
+                "b3VudHMubmludGVuZG8uY29tL2xvZ2luL2VtYWlsL2xhbmRpbmc/Y2hhbGxlbmdlX2lkPTAzYzQ3\r\n" +
+                "OTU2LWM4NmQtNDE4My04ODJkLTI0OGQ3MjEwMDFkMgoKUGxlYXNlIGJlIGF3YXJlIHRoYXQgaWYg\r\n" +
+                "eW91IGRvIG5vdCBjb21wbGV0ZSB0aGlzIHByb2Nlc3Mgd2l0aGluIDI0IGhvdXJzLCB0aGUgYWJv\r\n" +
+                "dmUgVVJMIHdpbGwgYmVjb21lIGludmFsaWQuCgpJZiB5b3UgZG8gbm90IGtub3cgd2h5IHlvdSBo\r\n" +
+                "YXZlIHJlY2VpdmVkIHRoaXMgZS1tYWlsLCBwbGVhc2UgZGVsZXRlIGl0LgoKLS0tLS0tLS0tLS0t\r\n" +
+                "LS0tLS0tLS0tLS0tLQpTaW5jZXJlbHksCk5pbnRlbmRvIENvLiwgTHRkLgoKWW91IGNhbm5vdCBy\r\n" +
+                "ZXBseSB0byB0aGlzIGUtbWFpbCBhZGRyZXNzLgpJZiB5b3UgaGF2ZSBhbnkgcXVlc3Rpb25zLCBw\r\n" +
+                "bGVhc2Ugc2VlIHRoZSBpbmZvcm1hdGlvbiBiZWxvdyBvbiBob3cgdG8gY29udGFjdCB1cy4KCuKW\r\n" +
+                "vU5pbnRlbmRvIEFjY291bnQgfCBGQVEKaHR0cHM6Ly9hY2NvdW50cy5uaW50ZW5kby5jb20vY29t\r\n" +
+                "bW9uX2hlbHAKCg==\r\n";
+        String content = "";
+        String charset = "utf-8";
+
+        try {
+            byte[] source = Base64.getDecoder().decode(a);
+            content += new String(source, charset);
+        } catch (IllegalArgumentException e) {
+            try {
+                byte[] source = Base64.getDecoder().decode(a.replace("\r\n", "").trim());
+                content += new String(source, charset);
+            } catch (UnsupportedEncodingException ex) {
+                ex.printStackTrace();
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }
