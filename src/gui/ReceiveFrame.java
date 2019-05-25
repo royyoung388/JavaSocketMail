@@ -17,6 +17,8 @@ public class ReceiveFrame {
     private JButton button_lastPage;
     private JButton button_nextPage;
     private JTextField text_page;
+    private JButton button_relush;
+    private JButton button_delete;
 
     private MyPOP3 pop3;
     private Mail[] currentPageMails;
@@ -53,7 +55,9 @@ public class ReceiveFrame {
                 }else {
                     pageLastMail += 10;
                 }
+                currentPage++;
                 initTable(pageFirstMail,pageLastMail);
+
             }
         });
         button_lastPage.addMouseListener(new MouseAdapter() {
@@ -64,7 +68,10 @@ public class ReceiveFrame {
                     return;
                 }
                 pageLastMail = pageFirstMail-1;
-                pageFirstMail = pageLastMail-10;
+                pageFirstMail = pageLastMail-9;
+                currentPage--;
+                initTable(pageFirstMail,pageLastMail);
+
             }
         });
 
@@ -140,6 +147,7 @@ public class ReceiveFrame {
             }
         };
         tableMail.setModel(dataModel);
+        text_page.setText(Integer.toString(currentPage));
     }
 
 }
