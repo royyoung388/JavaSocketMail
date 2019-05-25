@@ -10,7 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,8 +26,8 @@ public class SendFrame extends JFrame{
     private JButton sendButton = new JButton("发送");
     private JPanel panelSend;
 
-    private JButton timeSend = new JButton("定时发送");
-    private JButton draftbtn1 = new JButton("存草稿");
+    private JButton button_readDraft = new JButton("读取草稿");
+    private JButton button_saveDraft = new JButton("存草稿");
     private JButton closeButton = new JButton("关闭");
     private JLabel enclosure = new JLabel();
     private JButton addenclosure = new JButton("添加附件");
@@ -42,10 +43,10 @@ public class SendFrame extends JFrame{
     private List<String> strings = new ArrayList<>();
 
 
-    public SendFrame() {
+    SendFrame() {
         ImageIcon img = new ImageIcon("resource/writeMail.png");
         JLabel imgLabel = new JLabel(img);
-        this.getLayeredPane().add(panel, new Integer(Integer.MIN_VALUE));
+        this.getLayeredPane().add(panel, Integer.MIN_VALUE);
         imgLabel.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
         bg.setBounds(0, 0, 1000, 700);
         bg.setBackground(Color.white);
@@ -55,13 +56,13 @@ public class SendFrame extends JFrame{
         panel.add(imgLabel);
         //
         sendButton.setBounds(20, 55, 70, 30);
-        sendButton.setFont(new Font("微软雅黑",1,16));
-        timeSend.setBounds(100, 55, 100, 30);
-        timeSend.setFont(new Font("微软雅黑",1,16));
-        draftbtn1.setBounds(210, 55, 90, 30);
-        draftbtn1.setFont(new Font("微软雅黑",1,16));
+        sendButton.setFont(new Font("宋体",1,16));
+        button_readDraft.setBounds(100, 55, 100, 30);
+        button_readDraft.setFont(new Font("宋体",1,16));
+        button_saveDraft.setBounds(210, 55, 90, 30);
+        button_saveDraft.setFont(new Font("宋体",1,16));
         closeButton.setBounds(310, 55, 70, 30);
-        closeButton.setFont(new Font("微软雅黑",1,16));
+        closeButton.setFont(new Font("宋体",1,16));
 
         receiver.setBounds(50, 105, 50, 20);
         receiver.setForeground(Color.BLUE);
@@ -79,13 +80,58 @@ public class SendFrame extends JFrame{
         addressertxt.setEditable(false);
 
         this.add(sendButton);
-        this.add(timeSend);
-        this.add(draftbtn1);
+        this.add(button_readDraft);
+        this.add(button_saveDraft);
         this.add(closeButton);
         this.add(receiver);
         this.add(textFieldTo);
         this.add(theme);
         this.add(textFieldSubject);
+        this.add(addenclosure);
+        this.add(enclosure);
+        this.add(mainbody);
+        this.add(textAreaMain);
+        this.add(addresser);
+        this.add(addressertxt);
+        this.add(panel);
+        this.add(bg);
+
+        button_readDraft.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String draft_path = "./resource/drafts/" + email;
+                JFileChooser fc = new JFileChooser(draft_path);
+                int returnVal = fc.showOpenDialog(null);
+                File file = fc.getSelectedFile();
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    String path = file.getAbsolutePath();
+                    try {
+                        FileReader reader = new FileReader(path);
+                        BufferedReader bufferedReader = new BufferedReader(reader);
+                        String line;
+                        int count =0;
+                        while((line = bufferedReader.readLine())!=null){
+                            if (count ==0){
+                                textFieldTo.setText(line);
+                            }else if(count == 1) {
+                                textFieldSubject.setText(line);
+                            }else if(count == 2){
+                                textAreaMain.setText(line);
+                            }
+                            count++;
+                        }
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "读取草稿失败",
+                                "读取失败",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+                }
+            }
+        });
+
         addenclosure.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,14 +144,14 @@ public class SendFrame extends JFrame{
                 }
             }
         });
-        this.add(addenclosure);
-        this.add(enclosure);
-        this.add(mainbody);
-        this.add(textAreaMain);
-        this.add(addresser);
-        this.add(addressertxt);
-        this.add(panel);
-        this.add(bg);
+
+        button_saveDraft.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                saveDraft();
+            }
+        });
 
 
         sendButton.addMouseListener(new MouseAdapter() {
@@ -129,8 +175,50 @@ public class SendFrame extends JFrame{
                 setVisible(false);
             }
         });
+
+
+
+
     }
 
+
+    private void saveDraft(){
+        String path = "resource/drafts/" + email;
+        File file = new File(path);
+        if(!file.exists()){
+            file.mkdir();
+        }
+        path += "/" + textFieldSubject.getText()+".txt";
+        File txt = new File(path);
+        if(!txt.exists()) {
+            try {
+                txt.createNewFile();
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "创建草稿失败",
+                        "创建失败",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+        }
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(txt);
+            String content = textFieldTo.getText()+"\n"+textFieldSubject.getText()+"\n"+textAreaMain.getText();
+            fileOutputStream.write(content.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(
+                frame,
+                "保存草稿成功",
+                "成功",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+
+    }
     // 检查输入
     private boolean checkEnter(String email, String subject, String content) {
         String regEx1 = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
@@ -157,7 +245,7 @@ public class SendFrame extends JFrame{
     }
 
     // 发送
-    public void send(String toEmail, String subject, String content) {
+    private void send(String toEmail, String subject, String content) {
         MySMTP smtp = new MySMTP();
         try {
             smtp.send(email, password, toEmail, subject, content);
@@ -180,11 +268,10 @@ public class SendFrame extends JFrame{
                     "发送失败",
                     JOptionPane.WARNING_MESSAGE
             );
-            return;
         }
     }
 
-    public void show(String email, String password) {
+    void show(String email, String password) {
         this.email = email;
         this.password = password;
 
