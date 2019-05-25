@@ -87,6 +87,51 @@ public class SendFrame extends JFrame{
         this.add(textFieldTo);
         this.add(theme);
         this.add(textFieldSubject);
+        this.add(addenclosure);
+        this.add(enclosure);
+        this.add(mainbody);
+        this.add(textAreaMain);
+        this.add(addresser);
+        this.add(addressertxt);
+        this.add(panel);
+        this.add(bg);
+
+        button_readDraft.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String draft_path = "./resource/drafts/" + email;
+                JFileChooser fc = new JFileChooser(draft_path);
+                int returnVal = fc.showOpenDialog(null);
+                File file = fc.getSelectedFile();
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    String path = file.getAbsolutePath();
+                    try {
+                        FileReader reader = new FileReader(path);
+                        BufferedReader bufferedReader = new BufferedReader(reader);
+                        String line;
+                        int count =0;
+                        while((line = bufferedReader.readLine())!=null){
+                            if (count ==0){
+                                textFieldTo.setText(line);
+                            }else if(count == 1) {
+                                textFieldSubject.setText(line);
+                            }else if(count == 2){
+                                textAreaMain.setText(line);
+                            }
+                            count++;
+                        }
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "读取草稿失败",
+                                "读取失败",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+                }
+            }
+        });
+
         addenclosure.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,14 +144,6 @@ public class SendFrame extends JFrame{
                 }
             }
         });
-        this.add(addenclosure);
-        this.add(enclosure);
-        this.add(mainbody);
-        this.add(textAreaMain);
-        this.add(addresser);
-        this.add(addressertxt);
-        this.add(panel);
-        this.add(bg);
 
         button_saveDraft.addMouseListener(new MouseAdapter() {
             @Override
@@ -138,6 +175,10 @@ public class SendFrame extends JFrame{
                 setVisible(false);
             }
         });
+
+
+
+
     }
 
 
