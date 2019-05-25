@@ -165,13 +165,15 @@ public class Mail {
                         try {
                             byte[] source = Base64.getDecoder().decode(body.trim());
                             content += new String(source, charset);
-                        } catch (UnsupportedEncodingException e) {
+                        } catch (IllegalArgumentException e) {
                             try {
                                 byte[] source = Base64.getDecoder().decode(body.trim().replace("\r\n", ""));
                                 content += new String(source, charset);
                             } catch (UnsupportedEncodingException ex) {
                                 ex.printStackTrace();
                             }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                         break;
                 }
@@ -228,13 +230,15 @@ public class Mail {
                             try {
                                 byte[] source = Base64.getDecoder().decode(matcherContent.group(1).trim());
                                 content += new String(source, charset);
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (IllegalArgumentException e) {
                                 try {
                                     byte[] source = Base64.getDecoder().decode(matcherContent.group(1).trim().replace("\r\n", ""));
                                     content += new String(source, charset);
                                 } catch (UnsupportedEncodingException ex) {
                                     ex.printStackTrace();
                                 }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
                             }
                             break;
                     }
