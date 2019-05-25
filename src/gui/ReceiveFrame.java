@@ -26,10 +26,12 @@ public class ReceiveFrame {
     private int currentPage;
     private int pageLastMail;
     private int pageFirstMail;
+    private DefaultTableModel model;
+    private int deleteCount =0;
 
     ReceiveFrame(MyPOP3 p) {
         pop3 = p;
-        currentPage = 0;
+        currentPage = 1;
         try {
             mailCount = pop3.mailCount();
         } catch (POP3Exception e) {
@@ -49,6 +51,8 @@ public class ReceiveFrame {
                 if(pageLastMail == mailCount){
                     return;
                 }
+                pageLastMail = pageLastMail- deleteCount;
+                deleteCount =0;
                 pageFirstMail = pageLastMail+1;
                 if(pageLastMail+10>=mailCount){
                     pageLastMail = mailCount;
@@ -67,8 +71,13 @@ public class ReceiveFrame {
                 if(currentPage ==0){
                     return;
                 }
-                pageLastMail = pageFirstMail-1;
-                pageFirstMail = pageLastMail-9;
+                if(pageFirstMail<=10){
+                    pageFirstMail =1;
+                    pageLastMail = mailCount;
+                }else{
+                    pageLastMail = pageFirstMail-1;
+                    pageFirstMail = pageLastMail-9;
+                }
                 currentPage--;
                 initTable(pageFirstMail,pageLastMail);
 
@@ -84,6 +93,71 @@ public class ReceiveFrame {
                     int row = tableMail.getSelectedRow();
                     jumpToMail(row);
                 }
+            }
+        });
+
+        button_delete.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int[] rows = tableMail.getSelectedRows();
+
+
+                Object[] options = {"确定","取消"};
+                int response=JOptionPane.showOptionDialog(frame, "是否删除选中邮件？", "是否删除", JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                if(response==0){
+                    try {
+                        int[] newRows  = rows;
+                        for(int i=0; i< rows.length;i++){
+
+                            newRows[i]+=pageFirstMail;
+                            System.out.println(newRows[i]);
+                        }
+                        pop3.deleteMails(rows);
+                        for (int i =0;i<rows.length;i++){
+                            model.removeRow(rows[i]-1);
+                        }
+                        mailCount--;
+                        deleteCount++;
+                    } catch (POP3Exception e1) {
+                        String m = e1.getMessage();
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                m,
+                                "删除失败",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+
+                } else if(response==1) {
+                   return;
+                }
+            }
+        });
+        button_relush.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    mailCount = pop3.mailCount();
+                } catch (POP3Exception e1) {
+                    String m = e1.getMessage();
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            m,
+                            "刷新失败",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                }
+                if(1<= mailCount&& mailCount <10){
+                    initTable(1,mailCount);
+                    pageLastMail = mailCount;
+                } else if (mailCount >= 10) {
+                    initTable(1,10);
+                    pageLastMail = 10;
+                }
+                pageFirstMail =1;
             }
         });
     }
@@ -141,13 +215,12 @@ public class ReceiveFrame {
         // 设置表格
         Object[] column = {"时间", "来自", "内容"};
         Object[][] data = getMailInfo(s, e);
-        TableModel dataModel = new DefaultTableModel(data, column) {
+        model = new DefaultTableModel(data, column) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        tableMail.setModel(dataModel);
+        tableMail.setModel(model);
         text_page.setText(Integer.toString(currentPage));
     }
-
 }

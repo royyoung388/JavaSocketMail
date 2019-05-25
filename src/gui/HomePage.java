@@ -112,7 +112,7 @@ public class HomePage extends JFrame{
             smtp.login(email, password);
         } catch (SMTPException e) {
             JOptionPane.showMessageDialog(
-                    frame,
+                    this,
                     "错误码: " + e.getStatus() + "\n错误信息: " + e.getMessage(),
                     "登陆失败",
                     JOptionPane.WARNING_MESSAGE
@@ -123,7 +123,7 @@ public class HomePage extends JFrame{
         // 跳转
         SendFrame sendFrame = new SendFrame();
         sendFrame.show(email, password);
-        frame.dispose();
+        this.dispose();
     }
 
     // TODO : POP3登陆
@@ -133,10 +133,10 @@ public class HomePage extends JFrame{
         if(pop3.login()){
             ReceiveFrame receiveFrame = new ReceiveFrame(pop3);
             receiveFrame.show();
-            frame.dispose();
+            this.dispose();
         } else{
             JOptionPane.showMessageDialog(
-                    frame,
+                    this,
                     "pop3登录出错",
                     "登陆失败",
                     JOptionPane.WARNING_MESSAGE
