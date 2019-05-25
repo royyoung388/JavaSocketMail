@@ -1,26 +1,45 @@
 package gui;
 
 import pop3.MyPOP3;
-import pop3.POP3Exception;
-import smtp.MySMTP;
-import smtp.SMTPException;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LoginFrame {
+public class LoginFrame extends JFrame{
     private JFrame frame;
     private JPanel panelLogin;
-    private JTextField textFieldEmail;
-    private JPasswordField passwordFieldPasswd;
-    private JButton button_login;
+
+    private JPanel bg= new JPanel();
+    private JPanel panel = new JPanel();
+    private JButton button_login = new JButton();
+
+    private JTextField textFieldEmail = new JTextField(10);
+    private JPasswordField passwordFieldPasswd = new JPasswordField(10);
 
     LoginFrame() {
         textFieldEmail.setText("17316600635@163.com");
         passwordFieldPasswd.setText("victorinox");
+
+        ImageIcon img = new ImageIcon("resource/loginPage.png");
+        JLabel imgLabel = new JLabel(img);
+        this.getLayeredPane().add(panel, new Integer(Integer.MIN_VALUE));
+        imgLabel.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
+        bg.setBounds(0, 0, 950, 490);
+        bg.setBackground(Color.white);
+
+        panel.setBounds(0, 0, 950, 490);
+        panel.setOpaque(false);
+        panel.add(imgLabel);
+
+        button_login.setBounds(627,275, 285, 40);
+        button_login.setBorderPainted(false);
+        button_login.setBackground(Color.white);
+        button_login.setOpaque(false);
+
         button_login.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -35,6 +54,15 @@ public class LoginFrame {
                     };
             }
         });
+
+        textFieldEmail.setBounds(630,125,285,45);
+        passwordFieldPasswd.setBounds(630, 175, 285, 45);
+
+        this.add(button_login);
+        this.add(textFieldEmail);
+        this.add(passwordFieldPasswd);
+        this.add(panel);
+        this.add(bg);
     }
 
     // 检查输入
@@ -79,19 +107,19 @@ public class LoginFrame {
         }
     }
 
-    public void show() {
-        frame = new JFrame("登陆");
-        frame.setContentPane(panelLogin);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setSize(300, 300);
-        frame.setLocationRelativeTo(null);
+    public void showFrame() {
+        this.setLayout(null);
+        this.setSize(950, 500);
+        this.setLocation(400, 300);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.setVisible(true);
     }
 
     public static void main(String[] args) {
         LoginFrame loginFrame = new LoginFrame();
-        loginFrame.show();
+        loginFrame.showFrame();
     }
 }
