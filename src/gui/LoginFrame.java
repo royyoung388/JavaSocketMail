@@ -15,14 +15,13 @@ public class LoginFrame {
     private JFrame frame;
     private JPanel panelLogin;
     private JTextField textFieldEmail;
-    private JButton buttonReceive;
     private JPasswordField passwordFieldPasswd;
-    private JButton buttonSend;
+    private JButton button_login;
 
-    public LoginFrame() {
+    LoginFrame() {
         textFieldEmail.setText("17316600635@163.com");
         passwordFieldPasswd.setText("victorinox");
-        buttonSend.addMouseListener(new MouseAdapter() {
+        button_login.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -31,19 +30,9 @@ public class LoginFrame {
                 String password = new String(passwordFieldPasswd.getPassword());
 
                 if (checkEnter(email, password))
-                    loginSend(email, password);
-            }
-        });
-
-        buttonReceive.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                String email = textFieldEmail.getText();
-                String password = new String(passwordFieldPasswd.getPassword());
-
-                if (checkEnter(email, password))
-                    loginReceive(email, password);
+                    if(loginReceive(email,password)){
+                        HomePage homePage = new HomePage(email, password);
+                    };
             }
         });
     }
@@ -71,41 +60,23 @@ public class LoginFrame {
         return false;
     }
 
-    // SMTP登陆
-    private void loginSend(String email, String password) {
-        MySMTP smtp = new MySMTP();
-        try {
-            smtp.login(email, password);
-        } catch (SMTPException e) {
+    // TODO : POP3登陆
+    private boolean loginReceive(String user, String pw) {
+        // 跳转
+        MyPOP3 pop3 = new MyPOP3(user, pw);
+        boolean result = pop3.login();
+        if(result){
+            return true;
+        }
+        else {
             JOptionPane.showMessageDialog(
                     frame,
-                    "错误码: " + e.getStatus() + "\n错误信息: " + e.getMessage(),
+                    "pop3登录出错",
                     "登陆失败",
                     JOptionPane.WARNING_MESSAGE
             );
-            return;
+            return true;
         }
-
-        // 跳转
-        SendFrame sendFrame = new SendFrame();
-        sendFrame.show(email, password);
-        frame.dispose();
-    }
-
-    // TODO : POP3登陆
-    private void loginReceive(String user, String pw) {
-        // 跳转
-        MyPOP3 pop3 = new MyPOP3(user, pw);
-        try {
-            int mailCount = pop3.mailCount();
-            System.out.println(mailCount);
-        } catch (POP3Exception e) {
-            e.printStackTrace();
-        }
-
-        ReceiveFrame receiveFrame = new ReceiveFrame(pop3);
-        receiveFrame.show();
-        frame.dispose();
     }
 
     public void show() {

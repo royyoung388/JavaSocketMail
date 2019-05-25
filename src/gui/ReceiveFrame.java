@@ -79,9 +79,9 @@ public class ReceiveFrame {
     private void initTable() {
         // 设置表格
         Object[] column = {"时间", "来自", "内容"};
-        Object[][] data = getMailInfo(16, 16);
+        Object[][] data = getMailInfo(1, 5);
         try {
-            currentPageMails = pop3.getMails(16,16);
+            currentPageMails = pop3.getMails(1,5);
         } catch (POP3Exception e) {
             e.printStackTrace();
         }
