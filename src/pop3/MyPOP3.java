@@ -172,13 +172,4 @@ public class MyPOP3 {
         byte[] secretBytes = MessageDigest.getInstance("md5").digest(pwd.getBytes());
         return new BigInteger(1, secretBytes).toString(16);
     }
-
-    public static void main(String[] args) {
-        MyPOP3 pop3 = new MyPOP3("13297990330@163.com", "ypc19980501.");
-        try {
-            pop3.getMails(1, 10);
-        } catch (POP3Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
