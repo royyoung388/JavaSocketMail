@@ -1,5 +1,7 @@
 package gui;
 
+import pop3.Mail;
+
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,7 +15,10 @@ public class MailFrame {
     private JPanel panelMail;
     private JFrame receiveFrame;
 
-    public MailFrame() {
+    private Mail mail;
+
+    MailFrame(Mail mail) {
+        this.mail = mail;
         buttonBack.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -26,7 +31,7 @@ public class MailFrame {
         });
     }
 
-    public void show(JFrame receiveFrame) {
+    void show(JFrame receiveFrame) {
         frame = new JFrame("邮件");
         frame.setContentPane(panelMail);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,17 +43,18 @@ public class MailFrame {
         this.receiveFrame = receiveFrame;
 
         // TODO : 测试代码，信息需要在上一个界面获取并传到这个界面
-        String from = "453814685@qq.com";
-        String subject = "测试主题";
-        String content = "132\ndqw\n可以的";
+        setInfo();
+    }
+
+    void setInfo(){
+        String from = mail.getFrom();
+        String subject = mail.getSubject();
+        String content = mail.getContent();
 
         fromLabel.setText(from);
         subjectLabel.setText(subject);
         textAreaMain.setText(content);
     }
 
-    public static void main(String[] args) {
-        MailFrame mailFrame = new MailFrame();
-        mailFrame.show(null);
-    }
+
 }
