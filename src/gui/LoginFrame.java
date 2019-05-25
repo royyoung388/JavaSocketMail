@@ -1,5 +1,7 @@
 package gui;
 
+import pop3.MyPOP3;
+import pop3.POP3Exception;
 import smtp.MySMTP;
 import smtp.SMTPException;
 
@@ -18,6 +20,8 @@ public class LoginFrame {
     private JButton buttonSend;
 
     public LoginFrame() {
+        textFieldEmail.setText("17316600635@163.com");
+        passwordFieldPasswd.setText("victorinox");
         buttonSend.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -39,7 +43,7 @@ public class LoginFrame {
                 String password = new String(passwordFieldPasswd.getPassword());
 
                 if (checkEnter(email, password))
-                    loginReceive();
+                    loginReceive(email, password);
             }
         });
     }
@@ -89,9 +93,17 @@ public class LoginFrame {
     }
 
     // TODO : POP3登陆
-    private void loginReceive() {
+    private void loginReceive(String user, String pw) {
         // 跳转
-        ReceiveFrame receiveFrame = new ReceiveFrame();
+        MyPOP3 pop3 = new MyPOP3(user, pw);
+        try {
+            int mailCount = pop3.mailCount();
+            System.out.println(mailCount);
+        } catch (POP3Exception e) {
+            e.printStackTrace();
+        }
+
+        ReceiveFrame receiveFrame = new ReceiveFrame(pop3);
         receiveFrame.show();
         frame.dispose();
     }
