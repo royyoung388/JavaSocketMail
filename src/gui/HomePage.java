@@ -18,10 +18,9 @@ public class HomePage {
     private JButton button_receive;
     private JButton button_send;
     private JLabel label_user;
-    private JLabel label_img1;
-    private JLabel label_img2;
     private JTextField text_memo;
     private JPanel mainPanel;
+    private JLabel label_bg;
 
     private String user;
     private String password;
@@ -64,6 +63,10 @@ public class HomePage {
                 loginReceive(user, password);
             }
         });
+        ImageIcon img = new ImageIcon("resource/write.jpg");
+        label_bg.setIcon(img);
+        label_bg.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
+
         show();
     }
 
@@ -115,7 +118,7 @@ public class HomePage {
         frame.pack();
         frame.setVisible(true);
         frame.setResizable(false);
-        frame.setSize(500, 500);
+        frame.setSize(1005, 730);
         frame.setLocationRelativeTo(null);
     }
 }

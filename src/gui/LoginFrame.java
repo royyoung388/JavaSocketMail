@@ -26,7 +26,7 @@ public class LoginFrame extends JFrame{
 
         ImageIcon img = new ImageIcon("resource/loginPage.png");
         JLabel imgLabel = new JLabel(img);
-        this.getLayeredPane().add(panel, new Integer(Integer.MIN_VALUE));
+        this.getLayeredPane().add(panel, Integer.MIN_VALUE);
         imgLabel.setBounds(0,0,img.getIconWidth(), img.getIconHeight());
         bg.setBounds(0, 0, 950, 490);
         bg.setBackground(Color.white);
