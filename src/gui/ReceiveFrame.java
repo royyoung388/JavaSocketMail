@@ -6,6 +6,7 @@ import pop3.POP3Exception;
 
 import javax.swing.*;
 import javax.swing.table.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -16,10 +17,10 @@ public class ReceiveFrame {
     private JScrollPane panelScroll;
     private JButton button_lastPage;
     private JButton button_nextPage;
-    private JTextField text_page;
     private JButton button_relush;
     private JButton button_delete;
     private JButton button_return;
+    private JLabel label_page;
 
     private MyPOP3 pop3;
     private Mail[] currentPageMails;
@@ -33,6 +34,9 @@ public class ReceiveFrame {
     ReceiveFrame(MyPOP3 p) {
         pop3 = p;
         currentPage = 1;
+
+        label_page.setFont(new java.awt.Font("Dialog", Font.BOLD | Font.ITALIC,   35));
+        label_page.setForeground(Color.white);
 
         try {
             mailCount = pop3.mailCount();
@@ -177,7 +181,7 @@ public class ReceiveFrame {
                 }
                 pageFirstMail =1;
                 currentPage = 1;
-                text_page.setText(Integer.toString(currentPage));
+                label_page.setText(Integer.toString(currentPage));
             }
         });
     }
@@ -242,7 +246,7 @@ public class ReceiveFrame {
             }
         };
         tableMail.setModel(model);
-        text_page.setText(Integer.toString(currentPage));
+        label_page.setText(Integer.toString(currentPage));
     }
 
 }
