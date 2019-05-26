@@ -99,7 +99,7 @@ public class MailFrame extends JFrame{
     }
 
     void setInfo(){
-        String from = mail.getFrom();
+        String from = mail.getFrom()+"<"+mail.getFromEmail()+">";
         String subject = mail.getSubject();
         String content = mail.getContent();
 
