@@ -19,6 +19,7 @@ public class ReceiveFrame {
     private JTextField text_page;
     private JButton button_relush;
     private JButton button_delete;
+    private JButton button_return;
 
     private MyPOP3 pop3;
     private Mail[] currentPageMails;
@@ -94,6 +95,7 @@ public class ReceiveFrame {
             }
         });
 
+        tableMail.setRowHeight(50);
         tableMail.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -105,7 +107,13 @@ public class ReceiveFrame {
                 }
             }
         });
-
+        button_return.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                super.mouseClicked(event);
+                frame.setVisible(false);
+            }
+        });
         button_delete.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -192,8 +200,8 @@ public class ReceiveFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(500, 500);
-        frame.setLocationRelativeTo(null);
+        frame.setSize(1020, 750);
+        frame.setLocation(450, 165);
         if(1<= mailCount&& mailCount <10){
             initTable(1,mailCount);
             pageLastMail = mailCount;
@@ -234,4 +242,5 @@ public class ReceiveFrame {
         tableMail.setModel(model);
         text_page.setText(Integer.toString(currentPage));
     }
+
 }

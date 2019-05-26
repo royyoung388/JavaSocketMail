@@ -16,7 +16,7 @@ public class HomePage extends JFrame{
     private JFrame frame;
     private JTextField text_userEmail;
     private JLabel label_user;
-    private JTextField text_memo;
+    private JTextArea text_memo;
     private JPanel mainPanel;
     private JLabel label_bg;
 
@@ -43,8 +43,14 @@ public class HomePage extends JFrame{
         panel.setOpaque(false);
 
         title.setFont(new java.awt.Font("Dialog",   3,   55));
-        title.setForeground(Color.blue);
+        title.setForeground(Color.white);
         title.setBounds(350, 55, 125, 50);
+
+        text_memo.setFont(new java.awt.Font("Dialog",   3,   30));
+        text_memo.setForeground(Color.white);
+        text_memo.setBounds(350, 150, 500, 400);
+        text_memo.setLineWrap(true);
+        text_memo.setOpaque(false);
 
         button_receive.setBounds(72,300, 123, 50);
         button_receive.setBorderPainted(false);
@@ -80,7 +86,7 @@ public class HomePage extends JFrame{
         }catch(Exception e){
             e.printStackTrace();
         }
-        text_memo.setText(memo);
+        text_memo.setText("Today's motto:"+"\r\n"+memo);
 
         button_send.addMouseListener(new MouseAdapter() {
             @Override
@@ -99,6 +105,7 @@ public class HomePage extends JFrame{
         });
 
         this.add(title);
+        this.add(text_memo);
         this.add(button_receive);
         this.add(button_send);
         this.add(panel);

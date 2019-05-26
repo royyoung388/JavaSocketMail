@@ -26,7 +26,7 @@ public class SendFrame extends JFrame{
     private JButton sendButton = new JButton("发送");
     private JPanel panelSend;
 
-    private JButton button_readDraft = new JButton("读取草稿");
+    private JButton button_readDraft = new JButton("读草稿");
     private JButton button_saveDraft = new JButton("存草稿");
     private JButton closeButton = new JButton("关闭");
     private JLabel enclosure = new JLabel();
