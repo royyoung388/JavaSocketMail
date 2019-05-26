@@ -25,7 +25,7 @@ public class HomePage extends JFrame{
 
     private JButton button_receive = new JButton();
     private JButton button_send = new JButton();
-    private JLabel title = new JLabel("hi!");
+    private JLabel title = new JLabel();
     private JPanel bg= new JPanel();
     private JPanel panel = new JPanel();
 
@@ -42,9 +42,10 @@ public class HomePage extends JFrame{
         panel.add(imgLabel);
         panel.setOpaque(false);
 
-        title.setFont(new java.awt.Font("Dialog",   3,   55));
+        title.setText("hi! "+ user);
+        title.setFont(new java.awt.Font("Dialog",   3,   35));
         title.setForeground(Color.white);
-        title.setBounds(350, 55, 125, 50);
+        title.setBounds(350, 55, 500, 50);
 
         text_memo.setFont(new java.awt.Font("Dialog",   3,   30));
         text_memo.setForeground(Color.white);
@@ -156,8 +157,6 @@ public class HomePage extends JFrame{
     void showPage() {
         this.setLayout(null);
         this.setSize(1000, 700);
-        this.setLocation(400, 300);
-        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);

@@ -33,6 +33,7 @@ public class ReceiveFrame {
     ReceiveFrame(MyPOP3 p) {
         pop3 = p;
         currentPage = 1;
+
         try {
             mailCount = pop3.mailCount();
         } catch (POP3Exception e) {
@@ -196,12 +197,13 @@ public class ReceiveFrame {
 
     public void show() {
         frame = new JFrame("接收");
-        frame.setContentPane(panelReceive);
+        frame.setContentPane(this.panelReceive);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(1020, 750);
-        frame.setLocation(450, 165);
+        frame.setSize(1000, 700);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
         if(1<= mailCount&& mailCount <10){
             initTable(1,mailCount);
             pageLastMail = mailCount;

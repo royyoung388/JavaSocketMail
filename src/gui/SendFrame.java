@@ -277,8 +277,6 @@ public class SendFrame extends JFrame{
 
         this.setLayout(null);
         this.setSize(1005, 730);
-        this.setLocation(400, 300);
-        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);

@@ -87,10 +87,8 @@ public class MailFrame extends JFrame{
     void show(JFrame receiveFrame) {
         this.setLayout(null);
         this.setSize(1000, 700);
-        this.setLocation(400, 300);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setVisible(true);
         textAreaMain.setEditable(false);

@@ -112,8 +112,6 @@ public class LoginFrame extends JFrame{
     void showFrame() {
         this.setLayout(null);
         this.setSize(950, 500);
-        this.setLocation(400, 300);
-        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
