@@ -110,16 +110,18 @@ public class SendFrame extends JFrame{
                         BufferedReader bufferedReader = new BufferedReader(reader);
                         String line;
                         int count =0;
+                        String content = "";
                         while((line = bufferedReader.readLine())!=null){
                             if (count ==0){
                                 textFieldTo.setText(line);
                             }else if(count == 1) {
                                 textFieldSubject.setText(line);
-                            }else if(count == 2){
-                                textAreaMain.setText(line);
+                            }else {
+                                content+=line;
                             }
                             count++;
                         }
+                        textAreaMain.setText(content);
                     } catch (Exception e1) {
                         JOptionPane.showMessageDialog(
                                 frame,

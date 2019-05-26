@@ -139,9 +139,9 @@ public class ReceiveFrame {
                         pop3.deleteMails(newRows);
                         for (int row : rows) {
                             model.removeRow(row);
+                            mailCount--;
+                            pageLastMail--;
                         }
-                        mailCount--;
-                        pageLastMail--;
                     } catch (POP3Exception e1) {
                         String m = e1.getMessage();
                         JOptionPane.showMessageDialog(

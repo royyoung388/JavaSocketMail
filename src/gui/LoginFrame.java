@@ -21,7 +21,6 @@ public class LoginFrame extends JFrame{
     private JPasswordField passwordFieldPasswd = new JPasswordField(10);
 
     LoginFrame() {
-
         ImageIcon img = new ImageIcon("resource/loginPage.png");
         JLabel imgLabel = new JLabel(img);
         this.getLayeredPane().add(panel, Integer.MIN_VALUE);
